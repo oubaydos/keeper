@@ -1,40 +1,63 @@
 import React, { useState } from "react";
-//1. Implement the add note functionality.
-//- Create a constant that keeps track of the title and content.
-//- Pass the new note back to the App.
-//- Add new note to an array.
-//- Take array and render seperate Note components for each item.
+import AddIcon from "@material-ui/icons/Add";
+import Fab from "@material-ui/core/Fab";
+import Zoom from "@material-ui/core/Zoom";
 
 function CreateArea(props) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  function handleTitle(e) {
-    setTitle(e.target.value);
+  const [note, setNote] = useState({
+    title: "",
+    content: "",
+  });
+  const [minimize, setMinimize] = useState(true);
+
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setNote((prevNote) => {
+      return {
+        ...prevNote,
+        [name]: value,
+      };
+    });
   }
-  function handleText(e) {
-    setContent(e.target.value);
+  function handleClickInput(e) {
+    setMinimize(false);
   }
-  function handleClick(e) {
-    props.onClick(title, content);
-    e.preventDefault();
+  function submitNote(event) {
+    props.onAdd(note);
+    setNote({
+      title: "",
+      content: "",
+    });
+    event.preventDefault();
   }
+
   return (
     <div>
-      <form>
-        <input
-          onChange={handleTitle}
-          name="title"
-          placeholder="Title"
-          value={title}
-        />
+      <form className="create-note">
+        {!minimize && (
+          <input
+            name="title"
+            onChange={handleChange}
+            value={note.title}
+            placeholder="Title"
+            autoFocus
+          />
+        )}
         <textarea
-          onChange={handleText}
+          onClick={handleClickInput}
           name="content"
+          onChange={handleChange}
+          value={note.content}
           placeholder="Take a note..."
-          rows="3"
-          value={content}
+          rows={minimize ? "1" : "3"}
         />
-        <button onClick={handleClick}>Add</button>
+        {!minimize && (
+          <Zoom in={true}>
+            <Fab onClick={submitNote}>
+              <AddIcon />
+            </Fab>
+          </Zoom>
+        )}
       </form>
     </div>
   );
